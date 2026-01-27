@@ -47,8 +47,10 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import PageHeader, { ViewMode } from '../components/PageHeader';
 import FilterBar from '../components/FilterBar';
 import { Project } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectList: React.FC = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -249,7 +251,7 @@ const ProjectList: React.FC = () => {
                      </TableCell>
                      <TableCell align="right">
                        <Stack direction="row" justifyContent="flex-end">
-                         <IconButton size="small"><Eye size={16} /></IconButton>
+                         <IconButton size="small" onClick={() => navigate(`/projects/${proj.id}`)}><Eye size={16} /></IconButton>
                          <IconButton size="small"><Pencil size={16} /></IconButton>
                          <IconButton size="small" color="error" onClick={() => confirmDelete(proj.id)}><Trash2 size={16} /></IconButton>
                        </Stack>
@@ -270,7 +272,7 @@ const ProjectList: React.FC = () => {
           <Box sx={{ p: 2, flex: 1, overflowY: 'auto', bgcolor: '#f8fafc' }}>
              <Grid container spacing={2} columns={{ xs: 4, sm: 8, md: 12, lg: 12, xl: 12 }}>
                {filteredProjects.map((proj) => (
-                 <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3, xl: 3 }} key={proj.id}>
+                 <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3 }} key={proj.id}>
                    <Card variant="outlined" sx={{ borderRadius: 2, position: 'relative', '&:hover': { boxShadow: 2 } }}>
                       <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
                         <IconButton size="small"><MoreVertical size={18} /></IconButton>
@@ -321,7 +323,7 @@ const ProjectList: React.FC = () => {
                                ...getStatusStyles(proj.status)
                              }}
                            />
-                          <Button size="small" sx={{ fontSize: '0.75rem', minWidth: 'auto', px: 1 }}>Detalhes</Button>
+                          <Button size="small" sx={{ fontSize: '0.75rem', minWidth: 'auto', px: 1 }} onClick={() => navigate(`/projects/${proj.id}`)}>Detalhes</Button>
                         </Box>
                       </CardContent>
                    </Card>

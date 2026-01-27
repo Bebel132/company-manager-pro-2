@@ -290,7 +290,7 @@ const CompanyList: React.FC = () => {
         onClose={() => setShowToast(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={() => setShowToast(false)} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={() => setShowToast(false)} severity="success" variant="filled" sx={{ width: '100%' }}>
           Empresa excluída com sucesso.
         </Alert>
       </Snackbar>

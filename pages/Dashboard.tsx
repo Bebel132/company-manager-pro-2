@@ -232,7 +232,7 @@ const Dashboard: React.FC = () => {
                 p: 3, 
                 borderRadius: 3, 
                 bgcolor: 'primary.main', 
-                color: 'white', 
+                color: 'white',
                 border: 'none',
                 position: 'relative',
                 overflow: 'hidden'
