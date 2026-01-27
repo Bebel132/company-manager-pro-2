@@ -6,6 +6,7 @@ import Approvals from './pages/Approvals';
 import Activities from './pages/Activities';
 import PeopleList from './pages/PeopleList';
 import ProjectList from './pages/ProjectList';
+import ProjectDetail from './pages/ProjectDetail';
 import ContractList from './pages/ContractList';
 import HolidayManager from './pages/HolidayManager';
 import Dashboard from './pages/Dashboard';
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/activities" element={<Activities />} />
           <Route path="/people" element={<PeopleList />} />
           <Route path="/projects" element={<ProjectList />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/contracts" element={<ContractList />} />
           <Route path="/holidays" element={<HolidayManager />} />
           <Route path="*" element={<Navigate to="/" replace />} />
