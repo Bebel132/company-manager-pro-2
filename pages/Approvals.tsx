@@ -10,7 +10,7 @@ import {
   History, 
   UserPlus, 
   MoreVertical,
-  FileText,
+  FileText, 
   User,
   ArrowRight,
   CheckSquare
@@ -32,7 +32,7 @@ import {
   Table,
   TableHead,
   TableRow,
-  TableCell,
+  TableCell, 
   TableBody,
   IconButton,
   Grid,

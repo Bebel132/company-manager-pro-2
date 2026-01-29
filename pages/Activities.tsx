@@ -279,7 +279,7 @@ const Activities: React.FC = () => {
           <Box sx={{ p: 2, flex: 1, overflowY: 'auto', bgcolor: '#f8fafc' }}>
             <Grid container spacing={2} columns={{ xs: 4, sm: 8, md: 12, lg: 12, xl: 12 }}>
               {filteredActivities.map((activity) => (
-                <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3, xl: 3 }} key={activity.id}>
+                <Grid item xs={4} sm={4} md={4} lg={3} xl={3} key={activity.id}>
                   <Card variant="outlined" sx={{ borderRadius: 2, position: 'relative', '&:hover': { boxShadow: 2 } }}>
                     <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
                        <Chip 
@@ -331,43 +331,65 @@ const Activities: React.FC = () => {
         <DialogTitle>Nova Atividade</DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ mt: 0 }}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField 
-                select 
+            <Grid item xs={12} md={6}>
+              <InputLabel sx={{ mb: 0.5 }}>Projeto</InputLabel>
+              <Select 
                 fullWidth 
-                label="Projeto" 
+                size="small"
                 value={formData.project}
                 onChange={(e) => setFormData({...formData, project: e.target.value})}
+                renderValue={(selected) => {
+                  const project = mockProjects.find(p => p.id === selected);
+                  return project ? (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Avatar variant="rounded" sx={{ width: 20, height: 20, bgcolor: project.color }}>
+                          <Briefcase size={12} color="white" />
+                      </Avatar>
+                      <Typography variant="body2">{project.name}</Typography>
+                    </Stack>
+                  ) : selected;
+                }}
               >
-                {mockProjects.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
-              </TextField>
+                {mockProjects.map(p => (
+                  <MenuItem key={p.id} value={p.id}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Avatar variant="rounded" sx={{ width: 24, height: 24, bgcolor: p.color }}>
+                          <Briefcase size={14} color="white" />
+                      </Avatar>
+                      <Typography variant="body2">{p.name}</Typography>
+                    </Stack>
+                  </MenuItem>
+                ))}
+              </Select>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
+              <InputLabel sx={{ mb: 0.5 }}>Data</InputLabel>
               <TextField 
                 type="date" 
                 fullWidth 
-                label="Data" 
+                size="small"
                 value={formData.date}
                 onChange={(e) => setFormData({...formData, date: e.target.value})}
-                InputLabelProps={{ shrink: true }} 
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
+              <InputLabel sx={{ mb: 0.5 }}>Horas</InputLabel>
               <TextField 
                 type="number" 
                 fullWidth 
-                label="Horas" 
+                size="small"
                 value={formData.hours}
                 onChange={(e) => setFormData({...formData, hours: Number(e.target.value)})}
                 inputProps={{ step: 0.5 }} 
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
+              <InputLabel sx={{ mb: 0.5 }}>Descrição</InputLabel>
               <TextField 
                 fullWidth 
-                label="Descrição" 
                 multiline 
                 rows={3} 
+                size="small"
                 placeholder="O que foi feito?" 
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}

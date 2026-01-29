@@ -14,7 +14,7 @@ import {
   Pencil,
   Trash2,
   FileSpreadsheet,
-  FileText,
+  FileText, 
   X,
   MoreVertical
 } from 'lucide-react';

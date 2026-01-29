@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import { 
   CheckCircle2, 
   Clock, 
@@ -6,6 +7,7 @@ import {
   TrendingUp, 
   ArrowRight,
   Briefcase,
+  CheckSquare
 } from 'lucide-react';
 import { 
   Box, 
@@ -26,7 +28,7 @@ import {
   Chip,
   keyframes
 } from '@mui/material';
-import { mockActivities, mockProjects, mockHolidays } from '../services/mockData';
+import { mockActivities, mockProjects, mockHolidays, mockTasks } from '../services/mockData';
 import { useNavigate } from 'react-router-dom';
 
 // Animation Keyframes
@@ -46,6 +48,7 @@ const popIn = keyframes`
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const currentUserId = '1'; // Mock user: Ana Silva
   
   // Stats data
   const stats = [
@@ -55,12 +58,48 @@ const Dashboard: React.FC = () => {
     { label: 'Próximo Feriado', value: '25/12', icon: CalendarDays, color: '#16a34a', bg: '#f0fdf4' }, // Green
   ];
 
+  // Helper to calculate weekly progress
+  const getProjectWeeklyData = (projectId: string, projectName: string, weeklyAllocation: number) => {
+    const projectHours = mockActivities
+      .filter(a => a.project === projectName) 
+      .reduce((sum, act) => sum + act.hours, 0);
+
+    const percent = weeklyAllocation > 0 ? Math.min(100, Math.round((projectHours / weeklyAllocation) * 100)) : 0;
+    
+    return {
+      hours: projectHours,
+      percent,
+      allocation: weeklyAllocation
+    };
+  };
+
+  // Get My Assigned Tasks
+  const myTasks = useMemo(() => {
+    return mockTasks
+      .filter(t => t.assigneeId === currentUserId && t.status !== 'Concluído')
+      .sort((a,b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      })
+      .slice(0, 5);
+  }, []);
+
+  const getPriorityColor = (priority: string) => {
+    switch(priority) {
+      case 'Urgente': return 'error'; 
+      case 'Alta': return 'warning'; 
+      case 'Média': return 'info'; 
+      default: return 'default';
+    }
+ };
+
   return (
     <Box sx={{ p: 4, maxWidth: 1600, mx: 'auto' }}>
       {/* Welcome Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight="bold" color="text.primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          Olá, João Silva <span style={{ fontSize: '1.2em' }}>👋</span>
+          Olá, Ana Silva <span style={{ fontSize: '1.2em' }}>👋</span>
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Aqui está o resumo das suas atividades e pendências de hoje.
@@ -72,7 +111,7 @@ const Dashboard: React.FC = () => {
         
         {/* Stats Row */}
         {stats.map((stat, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <Card variant="outlined" sx={{ borderRadius: 3, height: '100%', boxShadow: 'none', border: '1px solid #e2e8f0' }}>
               <CardContent sx={{ display: 'flex', alignItems: 'center', p: 3, '&:last-child': { pb: 3 } }}>
                 <Box 
@@ -105,8 +144,69 @@ const Dashboard: React.FC = () => {
         ))}
 
         {/* Main Content Column (Left) */}
-        <Grid size={{ xs: 12, lg: 8 }}>
+        <Grid item xs={12} lg={8}>
           <Stack spacing={4}>
+            
+            {/* My Assigned Tasks */}
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" fontWeight="bold" display="flex" alignItems="center" gap={1}>
+                  <CheckSquare size={20} color="#0060B1"/>
+                  Minhas Tarefas Atribuídas
+                </Typography>
+              </Stack>
+              <List disablePadding>
+                {myTasks.map((task, idx) => {
+                  const project = mockProjects.find(p => p.id === task.projectId);
+                  return (
+                    <React.Fragment key={task.id}>
+                      <ListItem 
+                        sx={{ 
+                          px: 2, 
+                          py: 2, 
+                          borderRadius: 2,
+                          '&:hover': { bgcolor: '#f8fafc', cursor: 'pointer' }
+                        }}
+                        onClick={() => navigate(`/projects/${task.projectId}`)}
+                      >
+                        <ListItemText 
+                          primary={
+                            <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
+                              {task.title}
+                            </Typography>
+                          }
+                          secondary={
+                            <Stack direction="row" spacing={1} alignItems="center" component="span" sx={{ mt: 0.5 }}>
+                              <Chip label={project?.name || 'Projeto'} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                              <Typography variant="caption" color="text.secondary">•</Typography>
+                              <Typography variant="caption" color="text.secondary">Bucket: {task.bucket}</Typography>
+                            </Stack>
+                          }
+                        />
+                        <Stack alignItems="end" spacing={0.5}>
+                          <Chip 
+                            label={task.priority} 
+                            size="small" 
+                            color={getPriorityColor(task.priority)} 
+                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} 
+                          />
+                          {task.dueDate && (
+                            <Typography variant="caption" color={new Date(task.dueDate) < new Date() ? 'error.main' : 'text.secondary'} fontWeight="bold">
+                              {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </ListItem>
+                      {idx < myTasks.length - 1 && <Divider component="li" variant="inset" />}
+                    </React.Fragment>
+                  );
+                })}
+                {myTasks.length === 0 && (
+                  <Typography color="text.secondary" align="center" py={4}>Nenhuma tarefa pendente.</Typography>
+                )}
+              </List>
+            </Paper>
+
             {/* Active Projects */}
             <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0' }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
@@ -121,45 +221,52 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Stack>
               <Grid container spacing={2}>
-                {mockProjects.slice(0, 3).map((project) => (
-                  <Grid size={{ xs: 12, md: 4 }} key={project.id}>
-                    <Card variant="outlined" sx={{ 
-                      borderRadius: 2, 
-                      height: '100%',
-                      border: '1px solid #f1f5f9',
-                      '&:hover': { borderColor: 'primary.main', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
-                      transition: 'all 0.2s'
-                    }}>
-                      <CardContent>
-                        <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
-                          <Avatar variant="rounded" sx={{ bgcolor: '#f0f9ff', color: 'primary.main', width: 40, height: 40 }}>
-                            <Briefcase size={20} />
-                          </Avatar>
-                          <Box sx={{ overflow: 'hidden' }}>
-                            <Typography variant="subtitle2" fontWeight="bold" noWrap>{project.name}</Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap display="block">{project.companyName}</Typography>
-                          </Box>
-                        </Stack>
-                        <Box sx={{ mt: 2 }}>
-                          <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                            <Typography variant="caption" fontWeight="medium" color="text.secondary">Progresso</Typography>
-                            <Typography variant="caption" fontWeight="bold">{project.progress}%</Typography>
+                {mockProjects.slice(0, 3).map((project) => {
+                  const { hours, percent, allocation } = getProjectWeeklyData(project.id, project.name, project.weeklyAllocation);
+                  
+                  return (
+                    <Grid item xs={12} md={4} key={project.id}>
+                      <Card variant="outlined" sx={{ 
+                        borderRadius: 2, 
+                        height: '100%',
+                        border: '1px solid #f1f5f9',
+                        '&:hover': { borderColor: 'primary.main', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                        transition: 'all 0.2s'
+                      }}>
+                        <CardContent>
+                          <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
+                            <Avatar variant="rounded" sx={{ bgcolor: project.color ? `${project.color}20` : '#f0f9ff', color: project.color || 'primary.main', width: 40, height: 40 }}>
+                              <Briefcase size={20} />
+                            </Avatar>
+                            <Box sx={{ overflow: 'hidden' }}>
+                              <Typography variant="subtitle2" fontWeight="bold" noWrap>{project.name}</Typography>
+                              <Typography variant="caption" color="text.secondary" noWrap display="block">{project.companyName}</Typography>
+                            </Box>
                           </Stack>
-                          <LinearProgress 
-                            variant="determinate" 
-                            value={project.progress} 
-                            sx={{ 
-                              borderRadius: 2, 
-                              height: 6, 
-                              bgcolor: '#f1f5f9',
-                              '& .MuiLinearProgress-bar': { borderRadius: 2 }
-                            }} 
-                          />
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
+                          <Box sx={{ mt: 2 }}>
+                            <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                              <Typography variant="caption" fontWeight="medium" color="text.secondary">Horas da Semana</Typography>
+                              <Typography variant="caption" fontWeight="bold">
+                                {hours}h / {allocation}h ({percent}%)
+                              </Typography>
+                            </Stack>
+                            <LinearProgress 
+                              variant="determinate" 
+                              value={percent} 
+                              color={percent > 100 ? "error" : "primary"}
+                              sx={{ 
+                                borderRadius: 2, 
+                                height: 6, 
+                                bgcolor: '#f1f5f9',
+                                '& .MuiLinearProgress-bar': { borderRadius: 2, bgcolor: percent > 100 ? undefined : project.color }
+                              }} 
+                            />
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Paper>
 
@@ -209,7 +316,7 @@ const Dashboard: React.FC = () => {
                           label={activity.status} 
                           size="small" 
                           color={activity.status === 'Aprovado' ? 'success' : 'warning'} 
-                          variant="outlined" 
+                          variant={activity.status === 'Pendente' ? 'filled' : 'outlined'} 
                           sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} 
                         />
                       </Stack>
@@ -223,7 +330,7 @@ const Dashboard: React.FC = () => {
         </Grid>
 
         {/* Sidebar Column (Right) */}
-        <Grid size={{ xs: 12, lg: 4 }}>
+        <Grid item xs={12} lg={4}>
           <Stack spacing={4}>
             {/* Quick Actions */}
             <Paper 

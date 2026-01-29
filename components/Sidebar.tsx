@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -12,7 +13,8 @@ import {
   ChevronRight,
   LogOut,
   Hexagon,
-  Home
+  Home,
+  Award
 } from 'lucide-react';
 import { NavItem } from '../types';
 import { 
@@ -48,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, width }) =
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Início', path: '/' },
+    { id: 'pinplus', icon: Award, label: 'Pin+', path: '/pinplus' },
     { id: 'approvals', icon: CheckCircle2, label: 'Aprovações', path: '/approvals' },
     { id: 'activities', icon: Clock, label: 'Atividades', path: '/activities' },
     { id: 'people', icon: Users, label: 'Pessoas', path: '/people' },
@@ -213,14 +216,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, width }) =
           justifyContent: isExpanded ? 'flex-start' : 'center'
         }}>
           <Avatar 
-            src="https://i.pravatar.cc/150?u=a042581f4e29026024d" 
+            src="https://i.pravatar.cc/150?u=1" 
             sx={{ width: 40, height: 40, border: '2px solid rgba(255,255,255,0.5)' }} 
           />
           
           {isExpanded && (
              <Box sx={{ overflow: 'hidden' }}>
-               <Typography variant="body2" color="white" fontWeight="bold" noWrap>João Silva</Typography>
-               <Typography variant="caption" sx={{ color: '#bfdbfe' }} noWrap>joao@empresa.com</Typography>
+               <Typography variant="body2" color="white" fontWeight="bold" noWrap>Ana Silva</Typography>
+               <Typography variant="caption" sx={{ color: '#bfdbfe' }} noWrap>ana.silva@managerpro.com</Typography>
              </Box>
           )}
           

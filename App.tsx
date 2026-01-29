@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import CompanyList from './pages/CompanyList';
@@ -10,6 +11,7 @@ import ProjectDetail from './pages/ProjectDetail';
 import ContractList from './pages/ContractList';
 import HolidayManager from './pages/HolidayManager';
 import Dashboard from './pages/Dashboard';
+import PinPlus from './pages/PinPlus';
 import Layout from './components/Layout';
 
 const App: React.FC = () => {
@@ -27,6 +29,7 @@ const App: React.FC = () => {
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/contracts" element={<ContractList />} />
           <Route path="/holidays" element={<HolidayManager />} />
+          <Route path="/pinplus" element={<PinPlus />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

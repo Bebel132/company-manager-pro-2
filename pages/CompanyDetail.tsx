@@ -121,7 +121,7 @@ const CompanyDetail: React.FC = () => {
                   <Typography variant="body2" color="text.secondary">#PJST{Math.floor(Math.random() * 100000)}</Typography>
                 </Grid>
 
-                <Grid size={{ xs: 12 }}>
+                <Grid size={12}>
                   <Box sx={{ mt: 2 }}>
                     <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>Endereço</Typography>
                     <Grid container spacing={4}>

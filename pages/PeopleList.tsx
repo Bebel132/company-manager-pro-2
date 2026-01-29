@@ -97,12 +97,18 @@ const PeopleList: React.FC = () => {
     return 'success';
   };
 
+  const getProductivityColor = (value: number) => {
+    if (value >= 80) return 'success';
+    if (value >= 50) return 'warning';
+    return 'error';
+  };
+
   return (
     <Box sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
       
       <PageHeader 
         title="Gestão de Pessoas"
-        subtitle="Colaboradores, cargos e alocação"
+        subtitle="Colaboradores, cargos, alocação e produtividade"
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onAdd={() => console.log('Nova Pessoa')}
@@ -168,7 +174,8 @@ const PeopleList: React.FC = () => {
                  <TableRow>
                    <TableCell sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary' }}>Colaborador</TableCell>
                    <TableCell sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary' }}>Cargo</TableCell>
-                   <TableCell sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary', width: '25%' }}>Alocação</TableCell>
+                   <TableCell sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary', width: '20%' }}>Alocação</TableCell>
+                   <TableCell sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary', width: '20%' }}>Produtividade</TableCell>
                    <TableCell align="right" sx={{ bgcolor: '#f8fafc', fontWeight: 'bold', textTransform: 'uppercase', color: 'text.secondary' }}>Ações</TableCell>
                  </TableRow>
                </TableHead>
@@ -207,6 +214,20 @@ const PeopleList: React.FC = () => {
                          />
                        </Box>
                      </TableCell>
+                     <TableCell>
+                       <Box sx={{ width: '100%' }}>
+                         <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                           <Typography variant="caption" fontWeight="medium">Nível</Typography>
+                           <Typography variant="caption" fontWeight="bold">{person.productivity}%</Typography>
+                         </Stack>
+                         <LinearProgress 
+                           variant="determinate" 
+                           value={person.productivity} 
+                           color={getProductivityColor(person.productivity)}
+                           sx={{ height: 6, borderRadius: 3, bgcolor: '#f1f5f9' }} 
+                         />
+                       </Box>
+                     </TableCell>
                      <TableCell align="right">
                        <Stack direction="row" justifyContent="flex-end">
                          <IconButton size="small"><Eye size={16} /></IconButton>
@@ -218,7 +239,7 @@ const PeopleList: React.FC = () => {
                  ))}
                  {filteredPeople.length === 0 && (
                    <TableRow>
-                     <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                     <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
                        <Typography color="text.secondary">Nenhuma pessoa encontrada com os filtros atuais.</Typography>
                      </TableCell>
                    </TableRow>
@@ -255,6 +276,19 @@ const PeopleList: React.FC = () => {
                             variant="determinate" 
                             value={person.allocation} 
                             color={getAllocationColor(person.allocation)} 
+                            sx={{ height: 6, borderRadius: 4, bgcolor: '#f0fdf4' }} 
+                          />
+                        </Box>
+
+                        <Box sx={{ width: '100%', mb: 1, px: 1 }}>
+                          <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                            <Typography variant="caption" color="text.secondary">Produtividade</Typography>
+                            <Typography variant="caption" fontWeight="bold">{person.productivity}%</Typography>
+                          </Stack>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={person.productivity} 
+                            color={getProductivityColor(person.productivity)} 
                             sx={{ height: 6, borderRadius: 4, bgcolor: '#f0fdf4' }} 
                           />
                         </Box>
